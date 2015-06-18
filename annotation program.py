@@ -13,31 +13,7 @@ import re
 # import pickle
 import pickle
 
-class GeneModel:
-    def __init__(self, genemodel = '', chromosome = 0, location = range(0,0), strand = '', repgenemodel ='', genetype = '', fiveprimeutr = [], cds = [], threeprimeutr = []):
-        self.g = genemodel
-        self.c = chromosome
-        self.l = location
-        self.s = strand
-        self.gt = genetype
-        self.r = repgenemodel
-        self.f = fiveprimeutr
-        self.cds = cds
-        self.t =  threeprimeutr
-
-    def idRepGeneModel(self, elementsCL):
-        if ['mRNA', 'snoRNA', 'ncRNA', 'tRNA','pseudogenic_transcript', 'miRNA'].count(elementsCL[2]) == 1:
-            gene = re.search('ID=(.+?);', elementsCL[8])
-            if gene and gene.group(1) in repGeneModels and self.g == gene.group(1)[:-2]:
-                self.r = gene.group(1)
-                print(self.g, self.r)
-            else:
-                None
-        return(geneModels)
-
-    def print(self):
-        print(self.g, self.c, self.l, self.s, self.gt, self.r, self.f, self.cds, self.t)
-
+# this function reads main genes from .gff files
 def readGeneModels(geneModelCounter, elementsCL, strandGeneModelCounter):
     if ['gene','pseudogene'].count(elementsCL[2]) == 1 or re.search('transposable_element', elementsCL[2]):
         geneModelCounter += 1
@@ -48,11 +24,39 @@ def readGeneModels(geneModelCounter, elementsCL, strandGeneModelCounter):
             geneModels.append(GeneModel())
             geneModels[geneModelCounter-1].g = gene.group(1)
             geneModels[geneModelCounter-1].c = elementsCL[0].replace('Chr','')
-            geneModels[geneModelCounter-1].l = [int(elementsCL[3]), int(elementsCL[4])]
             geneModels[geneModelCounter-1].s = elementsCL[6]
         elif re.search('transposable_element', elementsCL[2]):
             geneModels[geneModelCounter-1].gt = 'TE'
     return([geneModels, geneModelCounter, strandGeneModelCounter])
+
+# this class defines the object and its methods for the gene models
+class GeneModel:
+    def __init__(self, genemodel = '', repgenemodel ='', chromosome = 0, location = range(0,0), strand = '', genetype = '', fiveprimeutr = [], cds = [], threeprimeutr = []):
+        self.g = genemodel
+        self.r = repgenemodel
+        self.c = chromosome
+        self.l = location
+        self.s = strand
+        self.gt = genetype
+        self.f = fiveprimeutr
+        self.cds = cds
+        self.t =  threeprimeutr
+
+    # this function determines whether a gene model is in the representative gene models list; if yes, it adds this info to gene model object
+    def idRepGeneModel(self, elementsCL):
+        if ['mRNA', 'snoRNA', 'ncRNA', 'tRNA','pseudogenic_transcript', 'miRNA'].count(elementsCL[2]) == 1:
+            gene = re.search('ID=(.+?);', elementsCL[8])
+            if gene and gene.group(1) in repGeneModels and self.g == gene.group(1)[:-2]:
+                self.r = gene.group(1)
+                self.l = [int(elementsCL[3]), int(elementsCL[4])]
+            else:
+                None
+        return(geneModels)
+
+    def print(self):
+        print(self.g, self.r, self.c, self.l, self.s, self.gt, self.f, self.cds, self.t)
+
+
 
 
 
@@ -83,7 +87,6 @@ repGeneModels = []
 for line in range(linesInRGMFile):
         currentLine = repGeneModelsFile.readline().rstrip('\n')
         repGeneModels.append(currentLine)
-print(repGeneModels)
 
 # start reading data lines
 gff = open(filePath_gff)
