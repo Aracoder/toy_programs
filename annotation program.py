@@ -8,6 +8,7 @@ __author__ = 'weigel'
 # exactly one gene model for each gene, as per .txt file that contains the representative gene models for each gene
 # other info: range of gene models, type of gene, strand
 
+import os
 # import regular expressions
 import re
 # import pickle
@@ -67,7 +68,7 @@ class GeneModel:
 #######################################################################################
 
 # Read .gff file
-filePath_gff = 'TAIR10_GFF3_genes_transposons_1M.gff'
+filePath_gff = os.path.expanduser('~/PycharmProjects/data_files/TAIR10_GFF3_genes_transposons_1M.gff')
 gff = open(filePath_gff)
 # count lines in gff file
 with gff as f:
@@ -75,13 +76,13 @@ with gff as f:
         pass
 
 # import representative gene models as list
-repGeneModelsFile = open('TAIR10_representative_gene_models_no_header.txt')
+repGeneModelsFile = open(os.path.expanduser('~/PycharmProjects/data_files/TAIR10_representative_gene_models_no_header.txt'))
 # count lines in repGeneModelsFile
 with repGeneModelsFile as f:
     for linesInRGMFile, l in enumerate(f):
         pass
 # read in lines in repGeneModelsFile, convert to list
-repGeneModelsFile = open('TAIR10_representative_gene_models_no_header.txt')
+repGeneModelsFile = open(os.path.expanduser('~/PycharmProjects/data_files/TAIR10_representative_gene_models_no_header.txt'))
 repGeneModels = []
 # read lines of RGMfile, strip new line character
 for line in range(linesInRGMFile):
@@ -142,14 +143,14 @@ for line in range(linesInGffFile - lastHeaderLine):
 
 
 # dump geneModels to output file
-file = open('TAIR10_gene_models.pkl','wb')
+file = open(os.path.expanduser('~/PycharmProjects/data_files/TAIR10_gene_models.pkl','wb'))
 pickle._dump(geneModels,file)
 file.close()
 
 
 # test reading back in variantList
 
-file = open('TAIR10_gene_models.pkl','rb')
+file = open(os.path.expanduser('~/PycharmProjects/data_files/TAIR10_gene_models.pkl','rb'))
 reconstituted = pickle.load(file)
 for i in range(geneModelCounter):
     reconstituted[i].print()
